@@ -18,7 +18,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	/** Fires a projectile. */
+	
 	
 
 public:	
@@ -47,6 +47,7 @@ public:
 	class UAnimMontage* FireAnimation;
 	class UAnimInstance* AnimInstance;
 
+	UFUNCTION(BlueprintCallable, Category = "Firing")
 	void OnFire();
 	
 };
