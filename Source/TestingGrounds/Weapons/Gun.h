@@ -42,10 +42,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	class USoundBase* FireSound;
 
-	/** AnimMontage to play each time we fire */
+	/** AnimMontages to play each time we fire */
+	class UAnimInstance* AnimInstance3P;
+	class UAnimInstance* AnimInstance1P;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
-	class UAnimMontage* FireAnimation;
-	class UAnimInstance* AnimInstance;
+	class UAnimMontage* FireAnimation3P;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+	class UAnimMontage* FireAnimation1P;
 
 	UFUNCTION(BlueprintCallable, Category = "Firing")
 	void OnFire();

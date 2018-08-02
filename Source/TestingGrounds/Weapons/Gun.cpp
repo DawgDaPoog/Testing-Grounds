@@ -35,7 +35,6 @@ AGun::AGun()
 void AGun::BeginPlay()
 {
 	Super::BeginPlay();
-	//FP_Gun->AttachToComponent(Mesh1P, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
 }
 
 // Called every frame
@@ -48,10 +47,10 @@ void AGun::Tick(float DeltaTime)
 void AGun::OnFire()
 {
 	// try and fire a projectile
-	if (ProjectileClass != NULL)
+	if (ProjectileClass != nullptr)
 	{
 		UWorld* const World = GetWorld();
-		if (World != NULL)
+		if (World != nullptr)
 		{
 			
 			const FRotator SpawnRotation = ((FP_MuzzleLocation != nullptr) ? FP_MuzzleLocation->GetComponentRotation() : GetActorRotation());
@@ -67,21 +66,20 @@ void AGun::OnFire()
 			
 		}
 	}
-
+	
 	// try and play the sound if specified
-	if (FireSound != NULL)
+	if (FireSound != nullptr)
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
 	}
 
 	// try and play a firing animation if specified
-	if (FireAnimation != NULL)
+	if (FireAnimation1P != NULL)
 	{
-		// Get the animation object for the arms mesh
-		
-		if (AnimInstance != NULL)
-		{
-			AnimInstance->Montage_Play(FireAnimation, 1.f);
-		}
+		AnimInstance1P->Montage_Play(FireAnimation1P, 1.f);
+	}
+	if (FireAnimation3P != NULL)
+	{
+		AnimInstance3P->Montage_Play(FireAnimation3P, 1.f);
 	}
 }

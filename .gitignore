@@ -2,6 +2,10 @@ Binaries
 DerivedDataCache
 Intermediate
 Saved
+Content/KiteDemo
+Content/ParagonProps
+Content/SampleMap
+Content/Lighting
 .vscode
 .vs
 *.VC.db
