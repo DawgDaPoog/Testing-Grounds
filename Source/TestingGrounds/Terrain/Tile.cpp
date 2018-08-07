@@ -1,0 +1,88 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#include "Tile.h"
+#include "Engine/World.h"
+#include "DrawDebugHelpers.h"
+
+// Sets default values
+ATile::ATile()
+{
+ 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	PrimaryActorTick.bCanEverTick = true;
+
+}
+
+
+void ATile::PlaceActors(TSubclassOf<AActor> ToSpawn, int MinSpawn, int MaxSpawn, float Radius)
+{
+	int NumberToSpawn = FMath::RandRange(MinSpawn, MaxSpawn);
+	FVector SpawnPoint;
+	for (int i = 0; i < NumberToSpawn; i++) {
+		if(FindEmptyLocation(SpawnPoint, Radius))
+		PlaceActor(ToSpawn, SpawnPoint);
+	}
+}
+
+// Called when the game starts or when spawned
+void ATile::BeginPlay()
+{
+	Super::BeginPlay();
+	CanSpawnAtLocation(GetActorLocation(),500);
+}
+
+void ATile::Destroyed()
+{
+	Super::Destroyed();
+	for (AActor* Actor : SpawnedActors) {
+		Actor->Destroy();
+	}
+}
+
+// Called every frame
+void ATile::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	
+}
+
+bool ATile::CanSpawnAtLocation(FVector Location, float Radius)
+{
+	FHitResult HitResult;
+	bool HasHit = GetWorld()->SweepSingleByChannel(
+		HitResult,
+		Location,
+		Location,
+		FQuat::Identity,
+		ECollisionChannel::ECC_GameTraceChannel2,
+		FCollisionShape::MakeSphere(Radius)
+	);
+	FColor ResultColor = HasHit ? FColor::Red : FColor::Green;
+	DrawDebugSphere(GetWorld(), Location, Radius, 20, ResultColor, true, 100);
+	return !HasHit;
+}
+
+bool ATile::FindEmptyLocation(FVector& OutLocation, float Radius)
+{
+	FVector Min(GetActorLocation().X, GetActorLocation().Y - 2000, GetActorLocation().Z + 130);
+	FVector Max(GetActorLocation().X + 4000, GetActorLocation().Y + 2000, GetActorLocation().Z + 130);
+	FBox Bounds(Min, Max);
+	const static int MAX_ATTEMPTS = 100;
+	for (size_t i = 0; i < MAX_ATTEMPTS; i++) {
+		FVector SpawnPoint = FMath::RandPointInBox(Bounds);
+		bool HasNotHit = CanSpawnAtLocation(SpawnPoint, Radius);
+		if (HasNotHit) {
+			OutLocation = SpawnPoint;
+			return true;
+		}
+	}
+	return false; 
+
+}
+
+void ATile::PlaceActor(TSubclassOf<AActor> ToSpawn, FVector SpawnPoint)
+{
+	AActor* Spawned = GetWorld()->SpawnActor<AActor>(ToSpawn, SpawnPoint, FRotator(0, FMath::RandRange(0.0f, 360.0f), 0), FActorSpawnParameters());
+	SpawnedActors.Add(Spawned);
+	Spawned->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepWorld, false));
+}
+
