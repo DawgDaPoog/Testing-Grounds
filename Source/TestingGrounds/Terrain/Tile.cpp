@@ -13,13 +13,14 @@ ATile::ATile()
 }
 
 
-void ATile::PlaceActors(TSubclassOf<AActor> ToSpawn, int MinSpawn, int MaxSpawn, float Radius)
+void ATile::PlaceActors(TSubclassOf<AActor> ToSpawn, int MinSpawn, int MaxSpawn, float Radius, float MinScale, float MaxScale )
 {
 	int NumberToSpawn = FMath::RandRange(MinSpawn, MaxSpawn);
 	FVector SpawnPoint;
+	float RandomScale = FMath::RandRange(MinScale, MaxScale);
 	for (int i = 0; i < NumberToSpawn; i++) {
-		if(FindEmptyLocation(SpawnPoint, Radius))
-		PlaceActor(ToSpawn, SpawnPoint);
+		if(FindEmptyLocation(SpawnPoint, Radius * RandomScale))
+		PlaceActor(ToSpawn, SpawnPoint, RandomScale);
 	}
 }
 
@@ -57,7 +58,9 @@ bool ATile::CanSpawnAtLocation(FVector Location, float Radius)
 		FCollisionShape::MakeSphere(Radius)
 	);
 	FColor ResultColor = HasHit ? FColor::Red : FColor::Green;
-	DrawDebugSphere(GetWorld(), Location, Radius, 20, ResultColor, true, 100);
+
+	// Uncomment next line to draw debug lines for clarifying spawn check radii
+	//DrawDebugSphere(GetWorld(), Location, Radius, 20, ResultColor, true, 100);
 	return !HasHit;
 }
 
@@ -66,7 +69,7 @@ bool ATile::FindEmptyLocation(FVector& OutLocation, float Radius)
 	FVector Min(GetActorLocation().X, GetActorLocation().Y - 2000, GetActorLocation().Z + 130);
 	FVector Max(GetActorLocation().X + 4000, GetActorLocation().Y + 2000, GetActorLocation().Z + 130);
 	FBox Bounds(Min, Max);
-	const static int MAX_ATTEMPTS = 100;
+	const static int MAX_ATTEMPTS = 30;
 	for (size_t i = 0; i < MAX_ATTEMPTS; i++) {
 		FVector SpawnPoint = FMath::RandPointInBox(Bounds);
 		bool HasNotHit = CanSpawnAtLocation(SpawnPoint, Radius);
@@ -79,9 +82,10 @@ bool ATile::FindEmptyLocation(FVector& OutLocation, float Radius)
 
 }
 
-void ATile::PlaceActor(TSubclassOf<AActor> ToSpawn, FVector SpawnPoint)
+void ATile::PlaceActor(TSubclassOf<AActor> ToSpawn, FVector SpawnPoint, float Scale)
 {
 	AActor* Spawned = GetWorld()->SpawnActor<AActor>(ToSpawn, SpawnPoint, FRotator(0, FMath::RandRange(0.0f, 360.0f), 0), FActorSpawnParameters());
+	Spawned->SetActorScale3D(FVector(Scale));
 	SpawnedActors.Add(Spawned);
 	Spawned->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepWorld, false));
 }
