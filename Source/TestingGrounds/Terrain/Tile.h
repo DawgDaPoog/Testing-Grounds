@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "Tile.generated.h"
 
+class UActorPool;
+
 UCLASS()
 class TESTINGGROUNDS_API ATile : public AActor
 {
@@ -18,6 +20,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Generating")
 	void PlaceActors(TSubclassOf<AActor> ToSpawn, int MinSpawn, int MaxSpawn, float Radius =200, float MinScale = 1, float MaxScale = 1);
 
+	UFUNCTION(BlueprintCallable, Category = "Pool")
+	void SetPool(UActorPool* InPool);
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -30,8 +35,11 @@ public:
 
 private:
 	bool CanSpawnAtLocation(FVector Location, float Radius);
-	
 	bool FindEmptyLocation(FVector& OutLocation, float Radius);
 	void PlaceActor(TSubclassOf<AActor>, FVector SpawnPoint, float Scale);
+	void PositionNavMeshBoundsVolume();
+
 	TArray<AActor*> SpawnedActors;
+
+	UActorPool* ActorPoolReference;
 };
