@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "ActorPool.h"
-
+#include "GameFramework/Actor.h"
 
 // Sets default values for this component's properties
 UActorPool::UActorPool()
@@ -15,15 +15,20 @@ UActorPool::UActorPool()
 
 AActor * UActorPool::Checkout()
 {
-	return nullptr;
+	UE_LOG(LogTemp, Warning, TEXT("Checkout: %s"), *GetName());
+	if (Pool.Num() == 0) {
+		UE_LOG(LogTemp, Error, TEXT("Nothing to check out. Returned nullptr"));
+		return nullptr;
+	}
+	return Pool.Pop();
 }
 
 void UActorPool::Return(AActor * ActorToReturn)
 {
-
+		Add(ActorToReturn);
 }
 
 void UActorPool::Add(AActor * ActorToAdd)
 {
-
+		Pool.Push(ActorToAdd);
 }

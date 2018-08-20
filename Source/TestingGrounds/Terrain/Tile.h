@@ -39,7 +39,7 @@ private:
 	void PlaceActor(TSubclassOf<AActor>, FVector SpawnPoint, float Scale);
 	void PositionNavMeshBoundsVolume();
 
+	AActor* NavMeshBoundsVolume;
 	TArray<AActor*> SpawnedActors;
-
 	UActorPool* ActorPoolReference;
 };

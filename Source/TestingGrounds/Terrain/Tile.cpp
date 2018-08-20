@@ -4,6 +4,12 @@
 #include "Engine/World.h"
 #include "DrawDebugHelpers.h"
 #include "ActorPool.h"
+#include "NavigationSystem/Public/NavigationData.h"
+#include "NavigationSystem.h"
+#include "NavigationSystemTypes.h"
+#include "NavigationSystemModule.h"
+#include "NavigationSystemHelpers.h"
+#include "NavigationSystem/Public/NavigationSystemTypes.h"
 
 // Sets default values
 ATile::ATile()
@@ -32,8 +38,15 @@ void ATile::SetPool(UActorPool * InPool)
 
 void ATile::PositionNavMeshBoundsVolume()
 {
-	AActor* NavMeshBoundsVolume = ActorPoolReference->Checkout();
-	NavMeshBoundsVolume->SetActorLocation(GetActorLocation());
+	NavMeshBoundsVolume = ActorPoolReference->Checkout();
+	if (NavMeshBoundsVolume == nullptr) {
+		UE_LOG(LogTemp, Error, TEXT("Not Enough Actors in Pool"));
+		return;
+	}
+	else
+		NavMeshBoundsVolume->SetActorLocation(GetActorLocation() + FVector(2000.0f, 0.f, 200.0f));
+	
+	FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld())->Build();
 }
 
 // Called when the game starts or when spawned
@@ -48,6 +61,8 @@ void ATile::Destroyed()
 	for (AActor* Actor : SpawnedActors) {
 		Actor->Destroy();
 	}
+
+	ActorPoolReference->Return(NavMeshBoundsVolume);
 }
 
 // Called every frame

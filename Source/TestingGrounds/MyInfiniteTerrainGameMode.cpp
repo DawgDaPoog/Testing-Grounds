@@ -27,8 +27,8 @@ void AMyInfiniteTerrainGameMode::PopulateBoundsVolumePool()
 void AMyInfiniteTerrainGameMode::AddToPool(AVolume * VolumeToAdd)
 {
 	auto VolumeName = VolumeToAdd->GetName();
-	if(VolumeName.Contains(FString("NavMesh"),ESearchCase::CaseSensitive,ESearchDir::FromStart))
-		UE_LOG(LogTemp, Warning, TEXT("Found NavMesh: %s"), *VolumeToAdd->GetName());
+	if (VolumeName.Contains(FString("NavMesh"), ESearchCase::CaseSensitive, ESearchDir::FromStart))
+		ActorPool->Add(VolumeToAdd);
 }
 
 
