@@ -6,7 +6,19 @@
 #include "GameFramework/Actor.h"
 #include "Tile.generated.h"
 
+
+USTRUCT()
+struct FSpawnPosition
+{
+	GENERATED_USTRUCT_BODY()
+
+	FVector Location;
+	float Scale;
+	float Rotation;
+};
+
 class UActorPool;
+class APawn;
 
 UCLASS()
 class TESTINGGROUNDS_API ATile : public AActor
@@ -19,6 +31,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Generating")
 	void PlaceActors(TSubclassOf<AActor> ToSpawn, int MinSpawn, int MaxSpawn, float Radius =200, float MinScale = 1, float MaxScale = 1);
+
+	UFUNCTION(BlueprintCallable, Category = "Generating")
+	void PlaceAIPawns(TSubclassOf<APawn> ToSpawn, int MinSpawn, int MaxSpawn, float Radius = 200);
 
 	UFUNCTION(BlueprintCallable, Category = "Pool")
 	void SetPool(UActorPool* InPool);
@@ -36,8 +51,11 @@ public:
 private:
 	bool CanSpawnAtLocation(FVector Location, float Radius);
 	bool FindEmptyLocation(FVector& OutLocation, float Radius);
-	void PlaceActor(TSubclassOf<AActor>, FVector SpawnPoint, float Scale);
+	void PlaceActor(TSubclassOf<AActor> ToSpawn, FSpawnPosition& SpawnPosition);
+	void PlaceAIPawn(TSubclassOf<APawn> ToSpawn, FSpawnPosition& SpawnPosition);
 	void PositionNavMeshBoundsVolume();
+
+	TArray<FSpawnPosition> RandomSpawnPositions(int MinSpawn, int MaxSpawn, float MinScale, float MaxScale, float Radius);
 
 	AActor* NavMeshBoundsVolume;
 	TArray<AActor*> SpawnedActors;
